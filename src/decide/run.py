@@ -6,6 +6,8 @@ from decide.contracts import Decision
 
 def decide(findings: Sequence[ValidationFinding]) -> Decision:
     """Deterministic: no LLM. Maps findings to a verdict."""
+    if not findings:
+        return Decision.APPROVE
     if any(f.status == FindingStatus.UNCLEAR for f in findings):
         return Decision.HUMAN_REVIEW
     blocking = {FindingSeverity.CRITICAL, FindingSeverity.HIGH}

@@ -13,7 +13,7 @@ Allowed categories:
 - calculation
 - output
 - error
-- side_effect
+- side-effect
 
 Grounding rules:
 - Every expectation must include an exact quote from SOURCE CODE.

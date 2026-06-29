@@ -61,5 +61,25 @@ primitives used across slices.
 pip install -r requirements.txt   # Python 3.12+
 ```
 
+There is no package install step, so set `PYTHONPATH` before running tests or
+importing directly from the repo root:
+
+```
+# Unix / macOS
+export PYTHONPATH=src
+
+# Windows (PowerShell)
+$env:PYTHONPATH = "src"
+
+# Windows (cmd)
+set PYTHONPATH=src
+```
+
+Then run tests with:
+
+```
+python -m pytest src/
+```
+
 Fresh checkout: every package directory needs `__init__.py`, and Pydantic
 contract files must not use `from __future__ import annotations`.

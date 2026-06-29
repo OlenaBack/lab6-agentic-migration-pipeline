@@ -81,7 +81,7 @@ def test_rejects_ungrounded_expectation() -> None:
             "expectations": [
                 {
                     "description": "The function writes to a database.",
-                    "category": "side_effect",
+                    "category": "side-effect",
                     "evidence_quote": "database.save(value)",
                 }
             ],

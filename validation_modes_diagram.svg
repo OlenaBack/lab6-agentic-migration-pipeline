@@ -8,7 +8,7 @@
   <!-- shared load -->
   <rect x="250" y="30" width="200" height="48" rx="8" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1"/>
   <text x="350" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">Load source + candidate</text>
-  <text x="350" y="67" text-anchor="middle" font-size="11" fill="#6b7280">Python source · C# candidate</text>
+  <text x="350" y="67" text-anchor="middle" font-size="11" fill="#6b7280">source code · migrated candidate</text>
 
   <path d="M320 78 L200 116" fill="none" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arrow)"/>
   <path d="M380 78 L500 116" fill="none" stroke="#6b7280" stroke-width="1.4" marker-end="url(#arrow)"/>
@@ -31,7 +31,7 @@
 
   <rect x="60" y="358" width="240" height="54" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
   <text x="180" y="378" text-anchor="middle" font-size="13" font-weight="600" fill="#14532d">ValidationVerdict</text>
-  <text x="180" y="396" text-anchor="middle" font-size="11" fill="#166534">approve · regenerate · review</text>
+  <text x="180" y="396" text-anchor="middle" font-size="11" fill="#166534">approve · regenerate · human_review</text>
 
   <line x1="180" y1="172" x2="180" y2="198" stroke="#16a34a" stroke-width="1.4" marker-end="url(#arrow)"/>
   <line x1="180" y1="252" x2="180" y2="278" stroke="#16a34a" stroke-width="1.4" marker-end="url(#arrow)"/>

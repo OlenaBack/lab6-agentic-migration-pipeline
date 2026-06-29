@@ -60,6 +60,12 @@ def compare_candidate(
             "should confirm the target is present before comparison."
         )
 
+    if not expectations:
+        raise ValueError(
+            "compare_candidate requires at least one expectation; an empty "
+            "sequence means extraction was skipped, which is a wiring error."
+        )
+
     findings: list[ValidationFinding] = []
 
     for expectation in expectations:
