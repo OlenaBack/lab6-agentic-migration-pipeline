@@ -1,7 +1,7 @@
 import json
 from collections.abc import Callable
 
-from validation.expectation_extraction import extract_expectations
+from extract_expectations.run import extract_expectations
 
 
 GENERIC_SOURCE = """

@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from enum import Enum
 from typing import Annotated
 
 from pydantic import Field, StringConstraints, model_validator
 
-from common.contracts.base import ContractModel
+from core.base import ContractModel
 
 
 NonEmptyText = Annotated[
@@ -53,7 +51,7 @@ class ExpectationExtractionPayload(ContractModel):
     reason: NonEmptyText | None = None
 
     @model_validator(mode="after")
-    def validate_shape(self) -> ExpectationExtractionPayload:
+    def validate_shape(self) -> "ExpectationExtractionPayload":
         if self.cannot_validate:
             if self.expectations:
                 raise ValueError(
@@ -109,7 +107,7 @@ class ExpectationExtractionResult(ContractModel):
     reason: NonEmptyText | None = None
 
     @model_validator(mode="after")
-    def validate_shape(self) -> ExpectationExtractionResult:
+    def validate_shape(self) -> "ExpectationExtractionResult":
         if self.cannot_validate:
             if self.expectations:
                 raise ValueError(

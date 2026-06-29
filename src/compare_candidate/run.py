@@ -2,19 +2,15 @@ from collections.abc import Callable, Sequence
 
 from pydantic import ValidationError
 
-from common.contracts import (
-    ExpectedBehavior,
+from compare_candidate.contracts import (
+    ComparisonJudgment,
+    ComparisonStatus,
     FindingSeverity,
     FindingStatus,
     ValidationFinding,
 )
-from common.contracts.comparison import ComparisonJudgment, ComparisonStatus
-from validation.assets.prompts import (
-    CANDIDATE_COMPARISON_PROMPT,
-    CANDIDATE_MARKER,
-    EXPECTATION_DESCRIPTION_MARKER,
-    EXPECTATION_EVIDENCE_MARKER,
-)
+from compare_candidate.prompt import build_prompt
+from extract_expectations.contracts import ExpectedBehavior
 
 
 # The LLM judges status only; severity is assigned deterministically so the
@@ -64,26 +60,10 @@ def compare_candidate(
             "should confirm the target is present before comparison."
         )
 
-    for marker in (
-        CANDIDATE_MARKER,
-        EXPECTATION_DESCRIPTION_MARKER,
-        EXPECTATION_EVIDENCE_MARKER,
-    ):
-        if marker not in CANDIDATE_COMPARISON_PROMPT:
-            raise RuntimeError(
-                "The comparison prompt is missing a substitution marker; "
-                "the template and build code are out of sync."
-            )
-
     findings: list[ValidationFinding] = []
 
     for expectation in expectations:
-        prompt = (
-            CANDIDATE_COMPARISON_PROMPT
-            .replace(EXPECTATION_DESCRIPTION_MARKER, expectation.description)
-            .replace(EXPECTATION_EVIDENCE_MARKER, expectation.evidence_quote)
-            .replace(CANDIDATE_MARKER, candidate)
-        )
+        prompt = build_prompt(expectation.description, expectation.evidence_quote, candidate)
 
         try:
             response = llm_call(prompt)

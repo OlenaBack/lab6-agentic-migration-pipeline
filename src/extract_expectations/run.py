@@ -2,16 +2,12 @@ from collections.abc import Callable
 
 from pydantic import ValidationError
 
-from common.contracts import (
+from extract_expectations.contracts import (
     ExpectationExtractionPayload,
     ExpectationExtractionResult,
     ExpectedBehavior,
 )
-from validation.assets.prompts import (
-    EXPECTATION_EXTRACTION_PROMPT,
-    RULES_MARKER,
-    SOURCE_MARKER,
-)
+from extract_expectations.prompt import build_prompt
 
 
 MIN_QUOTE_LENGTH = 3
@@ -40,26 +36,8 @@ def extract_expectations(
 
     effective_rules = migration_rules.strip() or DEFAULT_MIGRATION_RULES
 
-    # 2. Build the prompt safely.
-    #
-    # str.replace() substitutes only our named markers; literal JSON
-    # braces in the template are left untouched. A missing marker is a
-    # wiring bug, not a property of the source, so it raises rather than
-    # being laundered into a cannot_validate verdict.
-    if (
-        SOURCE_MARKER not in EXPECTATION_EXTRACTION_PROMPT
-        or RULES_MARKER not in EXPECTATION_EXTRACTION_PROMPT
-    ):
-        raise RuntimeError(
-            "The expectation-extraction prompt is missing its substitution "
-            "markers; the prompt template and build code are out of sync."
-        )
-
-    prompt = (
-        EXPECTATION_EXTRACTION_PROMPT
-        .replace(RULES_MARKER, effective_rules)
-        .replace(SOURCE_MARKER, source)
-    )
+    # 2. Build the prompt.
+    prompt = build_prompt(source, effective_rules)
 
     # 3. Call the LLM.
     try:

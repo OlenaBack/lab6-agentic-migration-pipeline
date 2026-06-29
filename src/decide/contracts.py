@@ -1,6 +1,6 @@
 from enum import Enum
 
-from common.contracts.base import ContractModel
+from core.base import ContractModel
 
 
 class Decision(str, Enum):

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
-from common.contracts import FindingSeverity, FindingStatus, ValidationFinding
-from common.contracts.verdict import Decision
+from compare_candidate.contracts import FindingSeverity, FindingStatus, ValidationFinding
+from decide.contracts import Decision
 
 
 def decide(findings: Sequence[ValidationFinding]) -> Decision:
