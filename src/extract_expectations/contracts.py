@@ -1,18 +1,8 @@
 from enum import Enum
-from typing import Annotated
 
-from pydantic import Field, StringConstraints, model_validator
+from pydantic import Field, model_validator
 
-from core.base import ContractModel
-
-
-NonEmptyText = Annotated[
-    str,
-    StringConstraints(
-        strip_whitespace=True,
-        min_length=1,
-    ),
-]
+from core.base import ContractModel, NonEmptyText
 
 
 class ExpectationCategory(str, Enum):

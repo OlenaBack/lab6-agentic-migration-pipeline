@@ -36,11 +36,30 @@ may pass unless the comparison prompt is tuned for them.
 Built end to end on one source/candidate pair. Planned: unsupported-behavior
 check, correction loop, seeded-mutation harness.
 
+## Structure
+
+Each pipeline step is a self-contained vertical slice:
+
+```
+src/
+├── core/                   shared primitives: ContractModel, NonEmptyText,
+│                           call_llm, read_source_file
+├── extract_expectations/   contracts · prompt · run · tests
+├── compare_candidate/      contracts · prompt · run · tests
+├── decide/                 contracts · run · tests
+└── pipeline/
+    └── migration_validation.ipynb
+```
+
+Every slice owns its Pydantic contracts, prompt template (with a `build_prompt`
+function), logic, and tests. `core/` holds the base class and shared type
+primitives used across slices.
+
 ## Setup
 
 ```
 pip install -r requirements.txt   # Python 3.12+
 ```
 
-Fresh checkout: every package dir under `src/` needs `__init__.py`, and
-Pydantic contract files must not use `from __future__ import annotations`.
+Fresh checkout: every package directory needs `__init__.py`, and Pydantic
+contract files must not use `from __future__ import annotations`.

@@ -1,8 +1,8 @@
 from enum import Enum
 
-from pydantic import Field, model_validator
+from pydantic import model_validator
 
-from core.base import ContractModel
+from core.base import ContractModel, NonEmptyText
 
 
 class ComparisonStatus(str, Enum):
@@ -15,7 +15,7 @@ class ComparisonStatus(str, Enum):
 class ComparisonJudgment(ContractModel):
     status: ComparisonStatus
     evidence_from_candidate: str | None = None
-    rationale: str = Field(min_length=1)
+    rationale: NonEmptyText
 
 
 class FindingStatus(str, Enum):
@@ -38,10 +38,10 @@ class ValidationFinding(ContractModel):
     severity: FindingSeverity
     evidence_from_source: str | None = None
     evidence_from_candidate: str | None = None
-    rationale: str = Field(min_length=1)
+    rationale: NonEmptyText
 
     @model_validator(mode="after")
-    def validate_finding_shape(self) -> "ValidationFinding":
+    def validate_shape(self) -> "ValidationFinding":
         if self.status == FindingStatus.ADDED:
             if self.expectation_id is not None:
                 raise ValueError("An ADDED finding cannot reference an expectation.")
