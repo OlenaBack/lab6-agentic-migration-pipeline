@@ -1,5 +1,7 @@
 # lab6-agentic-migration-pipeline
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/OlenaBack/lab6-agentic-migration-pipeline/blob/main/src/pipeline/migration_validation.ipynb)
+
 Validates AI-generated code migrations between any source and target
 environment (for example, Python to C#).
 
