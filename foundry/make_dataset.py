@@ -5,9 +5,11 @@ One JSONL row per verified expectation. The row carries everything the
 evaluator needs for a single judgment, mirroring the pipeline's
 one-expectation-per-call design.
 
-Usage (from the repo root, PYTHONPATH=src):
+Usage (from the repo root, PYTHONPATH=src;foundry on Windows, src:foundry
+on Unix; requires AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, and
+AZURE_OPENAI_DEPLOYMENT to be set):
 
-    python foundry/make_dataset.py --api-key-env OPENAI_API_KEY
+    python foundry/make_dataset.py
 
 Fail-closed: if extraction cannot validate, no dataset is written and the
 script exits non-zero with the reason.
@@ -17,13 +19,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
-from functools import partial
 from pathlib import Path
 
-from core.file_io import read_source_file
 from azure_llm_client import call_azure_llm
+from core.file_io import read_source_file
 from extract_expectations.run import extract_expectations
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -44,17 +44,14 @@ def main() -> int:
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--target", type=Path, default=DEFAULT_TARGET)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--api-key-env", default="OPENAI_API_KEY")
     args = parser.parse_args()
 
     source = read_source_file(args.source)
     candidate = read_source_file(args.target)
 
-    llm_call = call_azure_llm
-
     result = extract_expectations(
         source=source,
-        llm_call=llm_call,
+        llm_call=call_azure_llm,
         migration_rules=MIGRATION_RULES,
     )
 

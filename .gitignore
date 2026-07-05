@@ -1,12 +1,19 @@
 # Python
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # Jupyter
 .ipynb_checkpoints/
 
+# Visual Studio / VS Code
+.vs/
+
 # Generated outputs
 runs/
+
+# Foundry outputs with environment-specific IDs
+foundry/evaluation_results.json
 
 # Local environment and secrets
 .env
