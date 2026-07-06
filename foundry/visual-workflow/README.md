@@ -1,30 +1,34 @@
 # Foundry Visual Workflow
 
-This folder documents a proof of concept that reproduces the main flow of the migration-validation pipeline in the Microsoft Foundry visual workflow designer.
+This folder documents a low-code proof of concept built in the Microsoft Foundry visual workflow designer.
+
 ## Workflow overview
 
-![Foundry visual workflow](workflow-overview.png)
+![Foundry visual workflow](images/workflow-overview.png)
 
-## POC idea
-
-The goal is to show that the core validation flow can be built visually:
-
-```text
-input
-→ extract expectations
-→ parse structured output
-→ loop through expectations
-→ compare each expectation
-→ update counters
-→ return verdict
-```
+## How it works
 
 The workflow uses two Foundry agents:
 
 - `expectation-extractor`
 - `behavior-comparison-agent`
 
-The final verdict is calculated with workflow variables and expressions:
+The extractor returns structured expectations. The workflow parses them, loops through each expectation, calls the comparison agent, updates counters, and calculates the final verdict with workflow expressions.
+
+```text
+input
+→ extract expectations
+→ parse structured output
+→ compare each expectation
+→ update counters
+→ final decision
+```
+
+## Results in Foundry
+
+Each workflow run is visible in Foundry with execution traces for every node and comparison-agent invocation.
+
+The verdict rules are:
 
 ```text
 all preserved        → approve
@@ -32,31 +36,18 @@ changed or missing   → regenerate
 unclear or unusable  → human_review
 ```
 
-## What the POC demonstrates
+## Main technologies
 
-- structured agent outputs
-- sequential orchestration
-- looping over expectations
-- one comparison per expectation
-- deterministic counters and verdict
-- portal-visible traces for every step
+- Foundry visual workflow designer
+- Foundry agents with structured outputs
+- `ParseValue`
+- `Foreach`
+- workflow variables and Power Fx expressions
+- `SendActivity`
+- portal-visible execution traces
 
 ## Limitations
 
-This is not a full replacement for the Python pipeline.
+This proof of concept does not include repeated extraction, local evidence verification, deduplication, full result aggregation, or the independent evaluation cross-check used by the hybrid pipeline.
 
-It currently does not include:
-
-- repeated extraction passes
-- local source-evidence verification
-- expectation deduplication and stable IDs
-- complete aggregation of all comparison results
-- an independent evaluation cross-check
-- detailed final reports
-- compile-time or runtime validation
-
-The workflow must also remain stateless. Reusing the same conversation can allow earlier test input to affect later runs.
-
-## Scope
-
-The visual workflow is mainly a demonstration and learning artifact. The more complete implementation remains the hybrid Python pipeline, where complex validation logic is easier to test, version, and maintain.
+Each run should remain stateless so earlier conversation messages do not affect later validations.
