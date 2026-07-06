@@ -57,41 +57,14 @@ Every slice owns its Pydantic contracts, prompt template (with a `build_prompt`
 function), logic, and tests. `core/` holds the base class and shared type
 primitives used across slices.
 
-## Azure AI Foundry replication
+## Microsoft Foundry experiments
 
-The `foundry/` slice reproduces the pipeline as an Azure AI Foundry
-evaluation: the same extraction prompt builds the rubric, a custom
-`azure-ai-evaluation` evaluator reuses the comparison prompt and the
-`ComparisonJudgment` contract, and the deterministic `decide()` runs as a
-post-processing gate over the per-row results — restoring the verdict that
-Foundry's native aggregation (a mean pass rate) does not express.
+The Foundry work is documented separately in each track:
 
-```
-foundry/
-├── azure_llm_client.py       call_azure_llm: Foundry twin of core.llm_client
-├── make_dataset.py           extraction -> one JSONL row per expectation
-├── faithfulness_evaluator.py custom evaluator (LLM judges status only; fail-closed)
-├── verdict.py                rows -> ValidationFindings -> decide()
-├── run_evaluation.py         evaluate() + portal logging + verdict
-└── dataset.jsonl             generated rubric for the payroll example
-```
-
-Requires a Foundry project with a deployed model and, in the environment:
-`AZURE_OPENAI_ENDPOINT` (the `/openai/v1` endpoint), `AZURE_OPENAI_API_KEY`,
-and `AZURE_OPENAI_DEPLOYMENT` (the deployment name). Then, from the repo
-root, with `PYTHONPATH=src;foundry` (Windows) or `src:foundry` (Unix):
-
-```
-pip install azure-ai-evaluation azure-identity
-python foundry/make_dataset.py       # extraction -> foundry/dataset.jsonl
-python foundry/run_evaluation.py     # evaluation -> metrics, portal run, verdict
-```
-
-Portal logging authenticates via Entra ID (`az login`). Runs logged through
-the SDK may not appear in the New Foundry evaluations list; open the run via
-its `studio_url` (written into `evaluation_results.json`) or the classic
-portal view.
-
+- [Foundry SDK Baseline](foundry/sdk-baseline/README.md)
+- [Foundry Hybrid Agent Pipeline](foundry/hybrid_agent_pipeline/README.md)
+- [Foundry Visual Workflow](foundry/visual-workflow/README.md)
+- 
 ## Setup
 
 ```
