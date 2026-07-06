@@ -31,7 +31,7 @@ from openai import OpenAI
 from core.file_io import read_source_file
 from extract_expectations.run import extract_expectations
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = REPO_ROOT / "workspace"
 
 DEFAULT_SOURCE = WORKSPACE / "source" / "payroll-management.py"

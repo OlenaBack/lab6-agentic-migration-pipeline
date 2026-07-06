@@ -1,0 +1,73 @@
+kind: workflow
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: InvokeAzureAgent
+      id: extract_expectations
+      agent:
+        name: expectation-extractor
+      description: First agent in sequential workflow
+      conversationId: =System.ConversationId
+      input:
+        messages: =System.LastMessage
+      output:
+        messages: Local.LatestMessage
+        autoSend: false
+        responseObject: Local.ExtractionResult
+    - kind: ParseValue
+      id: parse_extraction_result
+      variable: Local.ParsedExtractionResult
+      valueType:
+        kind: Record
+      value: =Local.ExtractionResult
+    - kind: SetVariable
+      id: init_judged
+      variable: Local.JudgedCount
+      value: =0
+    - kind: SetVariable
+      id: init_nonpreserved
+      variable: Local.NonPreservedCount
+      value: =0
+    - kind: SetVariable
+      id: init_unknown
+      variable: Local.UnknownCount
+      value: =If(Local.ParsedExtractionResult.cannot_validate || CountRows(Local.ParsedExtractionResult.expectations) = 0, 1, 0)
+    - kind: Foreach
+      id: compare_expectations
+      items: =Local.ParsedExtractionResult.expectations
+      value: Local.CurrentExpectation
+      index: Local.ExpectationIndex
+      actions:
+        - kind: InvokeAzureAgent
+          id: compare_behavior
+          agent:
+            name: behavior-comparison-agent
+          input:
+            messages: =UserMessage( "Compare ONLY the single expectation below against the candidate. Ignore every other source behavior, even if another behavior changed." & "\n\nEXPECTATION ID:\nEXP-" & Text(Local.ExpectationIndex) & "\n\nEXPECTED BEHAVIOR:\n" & Local.CurrentExpectation.description & "\n\nCATEGORY:\n" & Local.CurrentExpectation.category & "\n\nSOURCE EVIDENCE:\n" & Local.CurrentExpectation.evidence_quote & "\n\nSOURCE, CANDIDATE, AND RULES:\n" & System.LastMessage.Text & "\n\nDECISION RULE:\nReturn preserved if this specific expectation is satisfied. Return changed only if this specific expectation is violated. Return unclear if the candidate evidence is insufficient.")
+          output:
+            autoSend: false
+            responseObject: Local.CurrentComparisonResult
+        - kind: ParseValue
+          id: parse_comparison
+          variable: Local.ParsedComparison
+          valueType:
+            kind: Record
+          value: =Local.CurrentComparisonResult
+        - kind: SetVariable
+          id: count_judged
+          variable: Local.JudgedCount
+          value: =Local.JudgedCount + 1
+        - kind: SetVariable
+          id: count_nonpreserved
+          variable: Local.NonPreservedCount
+          value: =Local.NonPreservedCount + If(Lower(Local.ParsedComparison.status) = "changed" || Lower(Local.ParsedComparison.status) = "missing", 1, 0)
+        - kind: SetVariable
+          id: count_unknown
+          variable: Local.UnknownCount
+          value: =Local.UnknownCount + If(Lower(Local.ParsedComparison.status) = "preserved" || Lower(Local.ParsedComparison.status) = "changed" || Lower(Local.ParsedComparison.status) = "missing", 0, 1)
+    - kind: SendActivity
+      id: send_verdict
+      activity: 'VERDICT: {If(Local.UnknownCount > 0, "human_review", If(Local.NonPreservedCount > 0, "regenerate", "approve"))} — Expectations judged: {Local.JudgedCount}, Non-preserved: {Local.NonPreservedCount}, Unclear or unusable: {Local.UnknownCount}'
+name: legacy-migration-validation-workflow
+description: ""

@@ -1,0 +1,121 @@
+metadata:
+  microsoft.voice-live.enabled: "false"
+object: agent.version
+id: expectation-extractor:5
+name: expectation-extractor
+version: "5"
+description: ""
+created_at: 1783329703
+definition:
+  kind: prompt
+  model: gpt-5-nano
+  instructions: |-
+    You extract explicit behavioral expectations from source code.
+
+    Each expectation must describe one behavior that a correct migration
+    must preserve.
+
+    Allowed categories:
+    - input
+    - calculation
+    - output
+    - error
+    - side-effect
+
+    Grounding rules:
+    - Every expectation must include an exact quote from SOURCE CODE.
+    - Differences in indentation or whitespace are acceptable.
+    - Do not invent, paraphrase, or reconstruct evidence.
+    - Do not use the migration rules as evidence.
+    - Do not infer behavior that the source does not establish.
+    - Do not generate expectation IDs.
+    - If no meaningful grounded expectations can be extracted, return
+      cannot_validate=true with a reason.
+
+    Atomicity rules:
+    - Each expectation must represent exactly one independently testable behavior.
+    - Do not combine multiple calculations, validations, outputs, or side effects into one expectation.
+    - Separate each assignment or formula that establishes a distinct value.
+    - Separate intermediate calculations from aggregate calculations.
+    - Separate the returned output shape from the calculations used to produce it.
+    - Atomicity applies to behaviors, not to fields of a single structure:
+      describe a returned structure as ONE output expectation that lists its
+      keys, not as one expectation per key or field.
+    Respond only with valid JSON using one of these two shapes.
+
+    Successful extraction:
+    {
+      "expectations": [
+        {
+          "description": "What behavior must be preserved",
+          "category": "input",
+          "evidence_quote": "Exact quote copied from the source"
+        }
+      ],
+      "cannot_validate": false,
+      "reason": null
+    }
+
+    Unable to extract grounded expectations:
+
+    {
+      "expectations": [],
+      "cannot_validate": true,
+      "reason": "Explain why grounded expectations cannot be extracted"
+    }
+  reasoning:
+    effort: low
+  tools: []
+  text:
+    format:
+      type: json_schema
+      name: expectation_extraction_response
+      schema:
+        type: object
+        properties:
+          expectations:
+            type: array
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum:
+                    - input
+                    - calculation
+                    - output
+                    - error
+                    - side-effect
+                evidence_quote:
+                  type: string
+              required:
+                - description
+                - category
+                - evidence_quote
+              additionalProperties: false
+          cannot_validate:
+            type: boolean
+          reason:
+            type:
+              - string
+              - "null"
+        required:
+          - expectations
+          - cannot_validate
+          - reason
+        additionalProperties: false
+      strict: true
+    verbosity: null
+status: active
+instance_identity:
+  principal_id: 28f5a830-d03c-49a1-8dcd-ee234d13f3b0
+  client_id: 28f5a830-d03c-49a1-8dcd-ee234d13f3b0
+blueprint:
+  principal_id: 67366cd2-f482-4047-890c-d56ccbed9a4d
+  client_id: a6154597-acf0-4156-b04e-23c4db8a57bc
+blueprint_reference:
+  type: ManagedAgentIdentityBlueprint
+  blueprint_id: expectation-extractor-ca73c
+agent_guid: ca73cc66-c796-4c46-8977-4a2e977806ee

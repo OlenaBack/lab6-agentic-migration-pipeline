@@ -73,7 +73,7 @@ from extract_expectations.run import extract_expectations
 from make_dataset_from_agent import MIGRATION_RULES, make_agent_llm_call
 from verdict import verdict_from_rows
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCE = REPO_ROOT / "workspace" / "source" / "payroll-management.py"
 TARGET = Path(os.environ.get( 
     "CANDIDATE_PATH",
