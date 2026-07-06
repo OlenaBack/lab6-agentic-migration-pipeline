@@ -21,10 +21,11 @@ source + candidate
 → final decision
 ```
 
-## Results in Foundry
+## Results Locally and in Foundry
 
-When the run is linked to a Foundry project, the evaluation appears in the Foundry portal with row-level results and aggregated metrics. This makes it possible to inspect individual judgments, compare runs, and keep an evaluation history outside the local files.
+The evaluation results are available locally in the terminal and in evaluation_results.json.
 
+When the run is linked to a Foundry project, the same results also appear in the Foundry portal, where you can inspect row-level judgments, aggregated metrics, run comparisons, and evaluation history.
 ## Main technologies
 
 - Microsoft Foundry model deployment
