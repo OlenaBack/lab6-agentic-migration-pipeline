@@ -19,3 +19,6 @@ foundry/evaluation_results.json
 .env
 .venv/
 venv/
+foundry/dataset_pipeline_*.jsonl
+foundry/pipeline_results_*.json
+foundry/debug_item.json

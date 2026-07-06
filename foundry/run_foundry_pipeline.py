@@ -75,7 +75,10 @@ from verdict import verdict_from_rows
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SOURCE = REPO_ROOT / "workspace" / "source" / "payroll-management.py"
-TARGET = REPO_ROOT / "workspace" / "target" / "payroll-management.cs"
+TARGET = Path(os.environ.get( 
+    "CANDIDATE_PATH",
+    str(REPO_ROOT / "workspace" / "target" / "payroll-management.cs"),
+))
 OUT_DIR = REPO_ROOT / "foundry"
 
 EVALUATOR_NAME = "faithfulness-label"
@@ -359,11 +362,17 @@ def main() -> int:
               file=sys.stderr)
 
     # ---- Stage 5: cross-check + deterministic verdict ------------------
+    NON_PRESERVED = {"changed", "missing"}
     print("[5/5] Cross-checking and computing verdict...")
     final_rows = []
     for row in agent_rows:
         eval_label = eval_rows.get(row["expectation_id"], "")
-        if eval_label and eval_label != row["status"]:
+        same_side = (
+            eval_label == row["status"]
+            or (eval_label in NON_PRESERVED
+                and row["status"] in NON_PRESERVED)
+        )
+        if eval_label and not same_side:
             print(f"      DISAGREEMENT {row['expectation_id']}: "
                   f"agent={row['status']} evaluator={eval_label} "
                   "-> unclear")
@@ -376,8 +385,11 @@ def main() -> int:
                 ),
                 "evidence_from_candidate": "",
             }
+        elif eval_label and eval_label != row["status"]:
+            print(f"      taxonomy note {row['expectation_id']}: "
+                  f"agent={row['status']} evaluator={eval_label} "
+                  "(same side, agent kept)")
         final_rows.append(row)
-
     results_path = OUT_DIR / f"pipeline_results_{run_id}.json"
     results_path.write_text(
         json.dumps(
