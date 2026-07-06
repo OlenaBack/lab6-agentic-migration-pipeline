@@ -4,7 +4,7 @@ This folder documents a low-code proof of concept built in the Microsoft Foundry
 
 ## Workflow overview
 
-![Foundry visual workflow](images/workflow-overview.png)
+![Foundry visual workflow](workflow-overview.png)
 
 ## How it works
 
